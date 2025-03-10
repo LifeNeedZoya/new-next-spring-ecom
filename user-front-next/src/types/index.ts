@@ -2,4 +2,11 @@ interface IDropdown {
   isOpen: boolean;
   toggleDropDown: () => void;
 }
-export type { IDropdown };
+
+interface ISignupForm {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export type { IDropdown, ISignupForm };

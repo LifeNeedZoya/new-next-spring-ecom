@@ -1,4 +1,3 @@
-"use client";
 import { Input } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { SearchIcon } from "lucide-react";

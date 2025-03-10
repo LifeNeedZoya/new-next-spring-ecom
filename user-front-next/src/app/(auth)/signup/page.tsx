@@ -1,50 +1,127 @@
-import { Button, Input } from "@/components";
-import { auth } from "@/lib/auth";
-import Link from "next/link";
-import { redirect } from "next/navigation";
+"use client";
 
-const Page = async () => {
-  const session = await auth();
-  if (session) redirect("/");
+import { ISignupForm } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+} from "@/components/ui";
+import axios from "axios";
+import { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z, ZodType } from "zod";
+
+const SignupSchema: ZodType = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+const Page = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+    setError,
+  } = useForm<ISignupForm>({
+    resolver: zodResolver(SignupSchema),
+  });
+
+  const handleSignup: SubmitHandler<ISignupForm> = async ({
+    name,
+    password,
+    email,
+  }) => {
+    setIsLoading(true);
+
+    try {
+      const data = await axios.post("/api/auth/signup", {
+        name,
+        password,
+        email,
+      });
+      console.log("data", data);
+    } catch (error) {
+      console.error("error", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="w-full max-w-sm mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-center mb-6">Create Account</h1>
+    <div className="flex justify-center items-center min-h-[500px] p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-center">
+            Sign up
+          </CardTitle>
+          <CardDescription className="text-center">
+            Create an account to get started
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(handleSignup)} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Enter your name"
+                {...register("name", { required: true })}
+                required
+              />
+              {errors.name && errors.name.message}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                {...register("email", { required: true })}
+                required
+              />
+              {errors.email && errors.email.message}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Create a password"
+                {...register("password", { required: true })}
+                required
+              />
+              {errors.password && errors.password.message}
+            </div>
 
-      <form
-        className="space-y-4"
-        action={async (formData) => {
-          "use server";
-          // const res = await signUp(formData);
-          // if (res.success) {
-          //   redirect("/sign-in");
-          // }
-        }}
-      >
-        <Input
-          name="email"
-          placeholder="Email"
-          type="email"
-          required
-          autoComplete="email"
-        />
-        <Input
-          name="password"
-          placeholder="Password"
-          type="password"
-          required
-          autoComplete="new-password"
-        />
-        <Button className="w-full" type="submit">
-          Sign Up
-        </Button>
-      </form>
-
-      <div className="text-center">
-        <Button asChild variant="link">
-          <Link href="/sign-in">Already have an account? Sign in</Link>
-        </Button>
-      </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Registering..." : "Register"}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="flex justify-center">
+          <p className="text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <a
+              href="/login"
+              className="text-primary font-medium hover:underline"
+            >
+              Log in
+            </a>
+          </p>
+        </CardFooter>
+      </Card>
     </div>
   );
 };
