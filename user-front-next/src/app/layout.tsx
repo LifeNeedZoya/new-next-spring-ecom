@@ -1,6 +1,8 @@
-import { Providers, ThemeProvider } from "@/components";
+import { Header, Providers, ThemeProvider } from "@/components";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -26,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased mt-16`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
           <ThemeProvider
@@ -35,7 +37,11 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <Header />
+            <ToastContainer />
+            <main className="min-h-[calc(100vh-4rem)] pt-16 mt-1">
+              {children}
+            </main>
           </ThemeProvider>
         </Providers>
       </body>

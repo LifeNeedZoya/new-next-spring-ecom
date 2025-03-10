@@ -1,19 +1,22 @@
+"use client";
+
 import { Button } from "@/components/ui";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
-export const AuthButton = async () => {
-  // const session = await getSession();
+export const AuthButton = () => {
+  const { data: session } = useSession();
+  const router = useRouter();
 
-  return (
-    <div>
-      {/* {session ? ( */}
-      <Button onClick={() => signOut()}>Log out</Button>
-      {/* ) : ( */}
-      <span>
-        <Button>Login</Button>
-        <Button>Register</Button>
-      </span>
-      {/* )} */}
-    </div>
+  return session ? (
+    <Button onClick={() => signOut()}>Log out</Button>
+  ) : (
+    <Button
+      variant={"secondary"}
+      onClick={() => router.push("/login")}
+      className="border-none"
+    >
+      Login
+    </Button>
   );
 };

@@ -2,9 +2,10 @@
 
 import { Button, Input } from "@/components";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 
 type LoginFormType = {
   email: string;
@@ -18,6 +19,8 @@ const Page = () => {
     formState: { errors },
   } = useForm<LoginFormType>();
   const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error");
 
   const OnSubmit: SubmitHandler<LoginFormType> = async ({
     password,
@@ -26,19 +29,24 @@ const Page = () => {
     setLoading(true);
 
     try {
-      const result = await signIn("credentials", {
-        redirect: true,
-        callbackUrl: "/",
+      await signIn("credentials", {
         email,
         password,
+        redirect: true,
+        callbackUrl: "/",
       });
-      console.log("result", result);
     } catch (error) {
       toast("Something went wrong");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (error === "CredentialsSignin") {
+      toast("Email or password is incorrect");
+    }
+  }, [error]);
 
   return (
     <div className="max-w-md mx-auto mt-16 p-8 border rounded-lg shadow-lg ">
@@ -59,7 +67,11 @@ const Page = () => {
           className="w-full"
           defaultValue={"pass1234"}
         />
-        <Button type="submit" className="w-full py-2  transition duration-200">
+        <Button
+          type="submit"
+          className="w-full py-2  transition duration-200"
+          disabled={loading}
+        >
           {loading ? "Loading.." : "Login"}
         </Button>
       </form>

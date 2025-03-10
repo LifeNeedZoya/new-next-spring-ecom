@@ -20,7 +20,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       authorize: async (credentials) => {
         try {
-          console.log("credentials", credentials);
           const { email, password } = signInSchema.parse(credentials);
 
           const user = await prisma.user.findUnique({
@@ -28,14 +27,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
 
           if (!user) {
-            console.log("User not found");
-            return null;
+            throw new Error("User not found");
           }
 
           const isPasswordValid = await bcrypt.compare(password, user.password);
           if (!isPasswordValid) {
-            console.log("Invalid password");
-            return null;
+            throw new Error("Password or email is incorrect");
           }
 
           return {
@@ -65,8 +62,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   pages: {
-    signIn: "/signin",
-    error: "/signin",
+    signIn: "/login",
   },
   session: {
     strategy: "jwt",

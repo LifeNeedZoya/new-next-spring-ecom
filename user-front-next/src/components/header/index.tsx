@@ -1,12 +1,12 @@
 "use client";
 
-import { Search } from "@/components";
+import { AuthButton, ModeToggle, Search } from "@/components";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { CategoryDropdown } from "./dropdown";
 
-export const Header = async () => {
+export const Header = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const toggleDropDown = () => {
@@ -15,7 +15,7 @@ export const Header = async () => {
 
   return (
     <div className="flex my-2 w-screen items-center border-b mx-auto top-0 fixed visible lg:px-40 md:px-20  justify-between">
-      <span className="flex justify-center items-center">
+      <span className="flex justify-center items-center flex-grow">
         <Link href={"/"}>
           <Image
             src={"/ebay-logo.png"}
@@ -28,8 +28,10 @@ export const Header = async () => {
         <CategoryDropdown isOpen={isOpen} toggleDropDown={toggleDropDown} />
         <Search />
       </span>
-      {/* <AuthButton /> */}
-      {/* <ModeToggle /> */}
+      <span className="flex justify-center items-center gap-2 mx-2">
+        <AuthButton />
+        <ModeToggle />
+      </span>
     </div>
   );
 };
