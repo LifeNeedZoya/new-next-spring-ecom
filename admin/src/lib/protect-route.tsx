@@ -4,11 +4,13 @@ import { ComponentType, useEffect } from "react";
 
 export function ProtectRoute<P extends object>(Component: ComponentType<P>) {
   return (props: P) => {
-    const { user, isAuthenticated, loading } = useAuth();
+    const { isAuthenticated, loading } = useAuth();
     const router = useRouter();
+
     useEffect(() => {
       if (!isAuthenticated && !loading) router.push("/login");
     }, [loading, isAuthenticated]);
+
     return <Component {...props} />;
   };
 }
